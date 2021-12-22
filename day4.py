@@ -35,11 +35,15 @@ def bingoDay4Part1(bingoArray, binNums):
                         rowBingo += 1
                     if rowBingo == 5:
                         boardNum = i/5
+                        
+                        
+
                         print(bingoNums)
                         
                         #return("BINGO at board: " + str(boardNum+1))
                         scoreJustCalled = int(bingoNums[-1])
-                        return(scoreJustCalled*getUnmarkedNumsSum(i, bingoNums))
+                        rowNum = i - i%5
+                        return(scoreJustCalled*getUnmarkedNumsSum(rowNum, bingoNums))
                 
                 if i%5 == 0:
                     if (i+4 < len(bingoArray)):
@@ -54,15 +58,29 @@ def bingoDay4Part1(bingoArray, binNums):
                             """
                             print(bingoNums)
                             scoreJustCalled = int(bingoNums[-1])
-                            
-                            return(scoreJustCalled*getUnmarkedNumsSum(i, bingoNums))
+                            rowNum = i - i%5 
+                            return(scoreJustCalled*getUnmarkedNumsSum(rowNum, bingoNums))
                         
                     
-#Day 4 part 2 code:
-#only horizontal and vertical
-def bingoDay4Part2(bingoArray, binNums):
-    bingoNums = []
+#Day 4 part 2 code: recursively remove completed boards until only 1 is left
+#only horizontal and vertical 
+#unfortunately very slow if a lot of boards
+numOfBoards = len(bingoArray)/5
+bingoNums = []
+
+def bingoDay4Part2(bingoArray, binNums, numOfBoards, scoreJustCalled, bingoNums2):
+    print(str(numOfBoards) + " boards left")
+    bingoNums = bingoNums2.copy()
+    newBingoArray = bingoArray.copy()
+   
+    if(numOfBoards <= 0):
+        return scoreJustCalled*getUnmarkedNumsSumLastBoard(bingoNums, newBingoArray)
+    
+    
+    
     for b in binNums:
+        
+        #may rewrite code so bingoNums gets appended after checking through all boards. As it is right now, if multiple boards get bingoed at the same time, it will remove the first board and then add another bingo num to bingoNums, thus when the next board is removed, the last num to be called will be different even tho the boards were bingoed at the same time
         bingoNums.append(b)
         for i in range(len(bingoArray)):
             for j in range(len(bingoArray[i])):
@@ -73,11 +91,26 @@ def bingoDay4Part2(bingoArray, binNums):
                         rowBingo += 1
                     if rowBingo == 5:
                         boardNum = i/5
-                        print(bingoNums)
+                        rowNum = i - i%5 
                         
-                        #return("BINGO at board: " + str(boardNum+1))
                         scoreJustCalled = int(bingoNums[-1])
-                        return(scoreJustCalled*getUnmarkedNumsSum(i, bingoNums))
+                        
+                        
+                        if numOfBoards == 1:
+                            return bingoDay4Part2(newBingoArray, binNums,numOfBoards-1, scoreJustCalled, bingoNums)
+                            
+                        
+                        k = 0
+                        while k < 5:
+                            newBingoArray.pop(rowNum)
+                            k += 1
+                      
+                      
+                        
+                        
+                        return bingoDay4Part2(newBingoArray, binNums,numOfBoards-1, scoreJustCalled, bingoNums)
+                        
+                      
                 
                 if i%5 == 0:
                     if (i+4 < len(bingoArray)):
@@ -90,15 +123,32 @@ def bingoDay4Part2(bingoArray, binNums):
                             print(bingoArray[i][j]+bingoArray[i+1][j]+bingoArray[i+2][j]+bingoArray[i+3][j]+bingoArray[i+4][j])
 
                             """
-                            print(bingoNums)
+                            rowNum = i - i%5
                             scoreJustCalled = int(bingoNums[-1])
                             
-                            return(scoreJustCalled*getUnmarkedNumsSum(i, bingoNums))
+                            
+                            if numOfBoards == 1:
+                                return bingoDay4Part2(newBingoArray, binNums,numOfBoards-1, scoreJustCalled, bingoNums)
+                        
+                            k = 0
+                            while k < 5:
+                                newBingoArray.pop(rowNum)
+                                k += 1
+                      
+                                
+     
+                            
+                            return bingoDay4Part2(newBingoArray, binNums,numOfBoards-1, scoreJustCalled, bingoNums)
+                            
+                            
                         
                     
 
 
 def getUnmarkedNumsSum(winningBoardFirstRow, bingoNums):
+    uniqueBingoNums = list(set(bingoNums))
+    print(uniqueBingoNums)
+    print(winningBoardFirstRow)
     counter = int(winningBoardFirstRow)
     unmarkedNumsSum = 0
     winningBoard = []
@@ -108,20 +158,45 @@ def getUnmarkedNumsSum(winningBoardFirstRow, bingoNums):
         for j in range(len(bingoArray[i])):
             unmarkedNumsSum += int(bingoArray[i][j])
             winningBoard.append(int(bingoArray[i][j]))
-    for x in bingoNums:
+    for x in uniqueBingoNums:
         if int(x) in winningBoard:
             unmarkedNumsSum -= int(x)
+    return(unmarkedNumsSum)
+
+def getUnmarkedNumsSumLastBoard(bingoNums, newBingoArray):
+
+    uniqueBingoNums = list(set(bingoNums))
+    print(uniqueBingoNums)
+   
+    counter = 0
+    unmarkedNumsSum = 0
+    winningBoard = []
+    print("WINNING BOARD:")
+    for i in range(counter, counter+5):
+        print(newBingoArray[i])
+        for j in range(len(newBingoArray [i])):
+            unmarkedNumsSum += int(newBingoArray[i][j])
+            winningBoard.append(int(newBingoArray[i][j]))
+            
+    for x in uniqueBingoNums:
+        if int(x) in winningBoard:
+            unmarkedNumsSum -= int(x)
+    
     return(unmarkedNumsSum)
         
 
 
 
 
-print(bingoDay4Part1(bingoArray,binNums))
+#print(bingoDay4Part1(bingoArray,binNums))
+print(bingoDay4Part2(bingoArray,binNums,numOfBoards, 0, []))
+    
+
+
+
 
     
-    
-#testing code
+#testing code ####################################################################
 def bingoTestingMethod(bingoArray):
     counter = 0
     for i in range(len(bingoArray)):
