@@ -23,6 +23,7 @@ print(binNums)
 #Day 4 part 1 code:
 #only horizontal and vertical
 def bingoDay4Part1(bingoArray, binNums):
+    #list of all called bingo numbers
     bingoNums = []
     for b in binNums:
         bingoNums.append(b)
@@ -66,6 +67,8 @@ def bingoDay4Part1(bingoArray, binNums):
 #only horizontal and vertical 
 #unfortunately very slow if a lot of boards
 numOfBoards = len(bingoArray)/5
+
+#list of all called bingo numbers
 bingoNums = []
 
 def bingoDay4Part2(bingoArray, binNums, numOfBoards, scoreJustCalled, bingoNums2):
